@@ -1,0 +1,762 @@
+# GOVs-AI — AI-Powered Government Scheme Eligibility Platform
+
+A startup-ready SaaS platform that uses an autonomous AI agent to help Indian citizens discover, evaluate, and apply for government welfare schemes through intelligent conversational profiling, RAG-powered document retrieval, and personalized eligibility analysis.
+
+---
+
+## Scope & Feasibility Strategy
+
+> [!IMPORTANT]
+> This is a **hackathon MVP** — not a production deployment. The plan prioritizes **demonstrable AI agent capabilities** (Planning, Tool Usage, Memory, Autonomous Execution) and **visual polish** over exhaustive backend infrastructure. Components like Redis, PostgreSQL, Celery, and role-based admin are **simplified** to keep the build feasible.
+
+### MVP Architecture Decision
+
+| Concern | Production Ideal | Hackathon MVP (Our Choice) |
+|---|---|---|
+| Database | PostgreSQL + migrations | SQLite via SQLAlchemy (zero-config, portable) |
+| Memory | Redis + LangGraph Checkpointer | In-memory dict + JSON file persistence |
+| Task Queue | Celery + Redis broker | FastAPI BackgroundTasks |
+| Auth | OAuth2 + JWT + refresh tokens | JWT with bcrypt hashing (simplified) |
+| Vector Store | Pinecone / Weaviate | FAISS (local, zero-cost) |
+| Deployment | Docker + K8s | Local dev servers |
+
+---
+
+## User Review Required
+
+> [!WARNING]
+> **Gemini API Key Required**: The LangGraph agent needs a Google Gemini API key. Please confirm:
+> 1. Do you have a Gemini API key, or should we use a mock/simulated LLM for demo mode?
+> 2. Which Gemini model should we target? (Recommended: `gemini-2.0-flash` for speed)
+
+> [!IMPORTANT]
+> **Technology Confirmation**: The plan uses **React + TypeScript + Vite** (frontend) and **Python FastAPI** (backend). The user's prompt mentioned React — please confirm TypeScript is acceptable (strongly recommended for production quality).
+
+## Open Questions
+
+1. **Gemini API Key**: Do you already have one, or should we build with a fallback mock mode for offline demos?
+2. **Demo-first or Full-stack-first?**: Should we prioritize getting the AI chat + RAG pipeline working first (demo flow), or build full CRUD infrastructure first (auth, profiles, dashboards)?
+3. **Government scheme data**: We'll create realistic sample data as structured JSON + sample PDFs. Is that sufficient, or do you need real scraped data?
+
+---
+
+## System Architecture
+
+```
+                           ┌──────────────┐
+                           │   CITIZEN /   │
+                           │    ADMIN      │
+                           └──────┬───────┘
+                                  │
+                                  ▼
+                    ┌─────────────────────────┐
+                    │   React Frontend (Vite)  │
+                    │   TypeScript + Vanilla CSS│
+                    │   Glassmorphism UI        │
+                    └────────────┬────────────┘
+                                 │ REST API + SSE
+                                 ▼
+                    ┌─────────────────────────┐
+                    │   FastAPI Backend        │
+                    │   JWT Auth · Pydantic v2 │
+                    │   Rate Limiting          │
+                    └────────────┬────────────┘
+                                 │
+              ┌──────────────────┼──────────────────┐
+              │                  │                   │
+              ▼                  ▼                   ▼
+     ┌────────────────┐  ┌──────────────┐  ┌───────────────┐
+     │ LangGraph Agent │  │   SQLite DB   │  │ JSON Memory   │
+     │ (State Machine) │  │ (SQLAlchemy)  │  │ Store         │
+     └───────┬────────┘  └──────────────┘  └───────────────┘
+             │
+             ▼
+     ┌────────────────┐
+     │ Tool Orchestrator│
+     └───────┬────────┘
+             │
+    ┌────────┼─────────┬──────────┐
+    ▼        ▼         ▼          ▼
+┌────────┐┌────────┐┌────────┐┌──────────────┐
+│ Gemini ││ FAISS  ││PyMuPDF ││ Scheme KB    │
+│ API    ││VectorDB││ Parser ││ (JSON + PDF) │
+└────────┘└────────┘└────────┘└──────────────┘
+             │
+             ▼
+     ┌────────────────┐
+     │Eligibility     │
+     │Engine          │
+     └───────┬────────┘
+             ▼
+     ┌────────────────┐
+     │Recommendation  │
+     │Engine          │
+     └───────┬────────┘
+             ▼
+  ┌──────────────────────┐
+  │ Checklist + Dashboard │
+  │ + History + Bookmarks │
+  └──────────────────────┘
+```
+
+---
+
+## Proposed Changes
+
+### Phase 1: Project Scaffolding & Core Infrastructure
+
+---
+
+#### Backend — `/backend`
+
+##### [NEW] `backend/requirements.txt`
+Core Python dependencies: `fastapi`, `uvicorn`, `sqlalchemy`, `pydantic`, `python-jose[cryptography]`, `passlib[bcrypt]`, `faiss-cpu`, `langchain`, `langgraph`, `langchain-google-genai`, `pymupdf`, `sentence-transformers`, `python-multipart`
+
+##### [NEW] `backend/main.py`
+FastAPI application entry point with CORS, middleware, lifespan events (load FAISS index, init DB), and route registration.
+
+##### [NEW] `backend/config.py`
+Settings management via Pydantic BaseSettings — `GEMINI_API_KEY`, `JWT_SECRET`, `DATABASE_URL`, `FAISS_INDEX_PATH`, etc.
+
+##### [NEW] `backend/database/connection.py`
+SQLAlchemy engine + session factory for SQLite. Auto-creates DB file on first run.
+
+##### [NEW] `backend/database/models.py`
+SQLAlchemy ORM models:
+- `User` (id, email, password_hash, role, created_at)
+- `Profile` (user_id FK, name, age, gender, state, occupation, income, category, education, land_area, disability, family_size, ...)
+- `Chat` (id, user_id FK, title, created_at)
+- `Message` (id, chat_id FK, role, content, metadata_json, created_at)
+- `ConversationMemory` (user_id FK, memory_json, updated_at)
+- `GovernmentScheme` (id, name, category, eligibility_json, benefits, documents_required, link, state, is_active)
+- `Recommendation` (id, user_id FK, scheme_id FK, score, reasoning, created_at)
+- `Bookmark` (id, user_id FK, scheme_id FK, created_at)
+- `Document` (id, filename, upload_path, processed, chunks_count, uploaded_by FK)
+- `Notification` (id, user_id FK, title, body, read, created_at)
+
+##### [NEW] `backend/api/auth.py`
+JWT authentication utilities — `create_access_token()`, `verify_token()`, `get_current_user()` dependency, password hashing with `passlib`.
+
+##### [NEW] `backend/api/routes/auth_routes.py`
+- `POST /api/signup` — register user + create empty profile
+- `POST /api/login` — authenticate, return JWT
+
+##### [NEW] `backend/api/routes/chat_routes.py`
+- `POST /api/chat` — send message, invoke LangGraph agent, stream response via SSE
+- `GET /api/history` — list user's chats with pagination
+- `GET /api/chat/{chat_id}` — get full conversation
+
+##### [NEW] `backend/api/routes/profile_routes.py`
+- `GET /api/profile` — get user profile
+- `PUT /api/profile` — update profile fields
+- `GET /api/profile/completion` — profile completion percentage
+
+##### [NEW] `backend/api/routes/scheme_routes.py`
+- `GET /api/schemes` — list all schemes (filterable)
+- `GET /api/schemes/{id}` — scheme detail
+- `GET /api/recommendations` — user's personalized recommendations
+- `POST /api/bookmark` — bookmark a scheme
+- `GET /api/bookmarks` — user's bookmarks
+
+##### [NEW] `backend/api/routes/document_routes.py`
+- `POST /api/upload-pdf` — upload PDF, trigger ingestion pipeline
+
+##### [NEW] `backend/api/routes/notification_routes.py`
+- `GET /api/notifications` — user's notifications
+- `PUT /api/notifications/{id}/read` — mark as read
+
+##### [NEW] `backend/api/routes/admin_routes.py`
+- `GET /api/admin/stats` — dashboard stats (user count, scheme count, chat analytics)
+- `GET /api/admin/users` — list users
+- `GET /api/admin/analytics` — chat analytics, popular schemes, top states
+
+---
+
+#### AI Agent — `/backend/agents`
+
+##### [NEW] `backend/agents/graph.py`
+LangGraph StateGraph definition with the following nodes:
+1. `understand_goal` — classify user intent (scheme query, eligibility check, comparison, general info)
+2. `retrieve_memory` — load conversation memory + user profile
+3. `check_missing_fields` — determine what profile fields are needed for eligibility
+4. `ask_question` — generate targeted question for missing info
+5. `retrieve_documents` — trigger RAG pipeline
+6. `reason_eligibility` — evaluate user against scheme criteria
+7. `rank_schemes` — score and sort matching schemes
+8. `generate_response` — create structured, explainable answer
+9. `generate_checklist` — produce document checklist for application
+10. `store_memory` — persist conversation memory
+
+Conditional edges: `check_missing_fields` → `ask_question` (if missing) or `retrieve_documents` (if complete)
+
+##### [NEW] `backend/agents/state.py`
+TypedDict state schema: `messages`, `user_profile`, `memory`, `missing_fields`, `retrieved_docs`, `eligible_schemes`, `ranked_schemes`, `checklist`, `current_intent`
+
+##### [NEW] `backend/agents/tools.py`
+LangChain tool definitions:
+- `search_schemes` — semantic search over FAISS index
+- `get_scheme_details` — lookup scheme by name/ID
+- `check_eligibility` — rule-based + LLM eligibility check
+- `compare_schemes` — compare two schemes side-by-side
+- `generate_checklist` — create document requirements list
+- `get_user_profile` — retrieve user profile from DB
+
+##### [NEW] `backend/agents/prompts.py`
+System prompts for each agent node — government scheme expert persona, question templates, eligibility reasoning templates, checklist formats.
+
+---
+
+#### RAG Pipeline — `/backend/rag`
+
+##### [NEW] `backend/rag/ingestion.py`
+PDF ingestion pipeline:
+1. Extract text from PDF via PyMuPDF
+2. Chunk text using RecursiveCharacterTextSplitter (chunk_size=500, overlap=100)
+3. Generate embeddings via `sentence-transformers/all-MiniLM-L6-v2`
+4. Add to FAISS index with metadata (source PDF, page number)
+
+##### [NEW] `backend/rag/retriever.py`
+FAISS retriever wrapper — `retrieve(query, k=5)` returns ranked document chunks with metadata and similarity scores.
+
+##### [NEW] `backend/rag/embeddings.py`
+Embedding model singleton — loads `all-MiniLM-L6-v2` once, provides `embed_query()` and `embed_documents()`.
+
+---
+
+#### Memory — `/backend/memory`
+
+##### [NEW] `backend/memory/store.py`
+JSON-file-backed memory store per user. Stores: extracted profile fields, conversation summaries, scheme interests, last interaction timestamp.
+
+---
+
+#### Sample Data — `/backend/data`
+
+##### [NEW] `backend/data/schemes.json`
+Structured JSON with 15+ government schemes including:
+- PM Kisan Samman Nidhi
+- PM Vishwakarma Yojana
+- Mudra Loan (Shishu/Kishore/Tarun)
+- Ayushman Bharat PM-JAY
+- Startup India
+- Skill India (PMKVY)
+- National Scholarship Portal schemes
+- Stand-Up India
+- PM Awas Yojana
+- Sukanya Samriddhi Yojana
+- Atal Pension Yojana
+- PM Ujjwala Yojana
+
+Each scheme has: `name`, `category`, `description`, `eligibility` (age, income, occupation, gender, state, education criteria), `benefits`, `documents_required`, `application_process`, `website_url`, `ministry`.
+
+##### [NEW] `backend/data/sample_pdfs/` (directory)
+5-6 sample PDF files with scheme information text (generated as realistic government-style content).
+
+##### [NEW] `backend/data/demo_users.json`
+Pre-configured demo user profiles:
+- **Ramesh** (Farmer, 45, Uttar Pradesh, ₹1.2L income, 3 acres land)
+- **Priya** (Student, 20, Maharashtra, SC category, ₹2.5L family income)
+- **Sunita** (Woman Entrepreneur, 35, Gujarat, wants business loan)
+- **Mohan** (Senior Citizen, 68, Tamil Nadu, pension needs)
+- **Vikram** (Business Owner, 30, Karnataka, startup founder)
+
+Each with: saved profile, 3-5 pre-loaded chat messages, recommended schemes, and generated checklists.
+
+---
+
+### Phase 2: Frontend Application
+
+---
+
+#### Frontend — `/frontend`
+
+##### [NEW] Frontend scaffolded via `npx create-vite`
+React + TypeScript template.
+
+##### [NEW] `frontend/src/index.css`
+Complete design system:
+- **Color palette**: Government-inspired — deep navy (`#0C1445`), saffron accent (`#FF6B35`), white green (`#138808`), Ashoka blue
+- **CSS custom properties** for all tokens (colors, spacing, radii, shadows, typography)
+- **Glassmorphism** utility classes: `.glass-card`, `.glass-panel`, `.glass-sidebar`
+- **Dark/Light mode** via `[data-theme]` attribute
+- **Animations**: `@keyframes fadeIn`, `slideUp`, `shimmer` (for skeletons), `pulse`
+- **Typography**: Google Fonts — `Inter` (body), `Outfit` (headings)
+- **Responsive breakpoints**: mobile-first
+
+##### [NEW] `frontend/src/App.tsx`
+Root layout with React Router, theme provider, toast notification system.
+
+##### [NEW] `frontend/src/context/AuthContext.tsx`
+Authentication context — login, signup, logout, JWT token management, current user state.
+
+##### [NEW] `frontend/src/context/ThemeContext.tsx`
+Dark/light mode toggle with localStorage persistence.
+
+##### [NEW] `frontend/src/lib/api.ts`
+Axios instance with JWT interceptor, base URL config, error handling.
+
+##### [NEW] `frontend/src/types/index.ts`
+TypeScript interfaces: `User`, `Profile`, `Chat`, `Message`, `Scheme`, `Recommendation`, `Bookmark`, `Notification`.
+
+##### [NEW] `frontend/src/hooks/useChat.ts`
+Chat hook — manages message state, SSE streaming, send/receive logic.
+
+##### [NEW] `frontend/src/hooks/useSchemes.ts`
+Schemes data hook — fetch, filter, search, bookmark.
+
+##### [NEW] `frontend/src/hooks/useProfile.ts`
+Profile data hook — fetch, update, completion percentage.
+
+---
+
+#### Pages
+
+##### [NEW] `frontend/src/pages/LandingPage.tsx`
+Hero section with animated gradient, feature cards with glassmorphism, demo user selector, CTA buttons. Professional, startup-quality landing page.
+
+##### [NEW] `frontend/src/pages/LoginPage.tsx`
+Glassmorphic login form with animated background, demo user quick-login buttons.
+
+##### [NEW] `frontend/src/pages/SignupPage.tsx`
+Multi-step signup with profile wizard.
+
+##### [NEW] `frontend/src/pages/DashboardPage.tsx`
+Citizen dashboard with:
+- Profile completion progress ring
+- Recent chats list
+- Recommended schemes cards
+- Readiness score gauge
+- Bookmarked schemes
+- Notification bell
+- Quick actions
+
+##### [NEW] `frontend/src/pages/ChatPage.tsx`
+Full-screen AI chat interface:
+- Message bubbles with typing indicator
+- AI thinking animation
+- Scheme recommendation cards inline
+- Checklist rendering
+- Chat history sidebar
+
+##### [NEW] `frontend/src/pages/SchemesPage.tsx`
+Searchable, filterable scheme catalog with category tabs, cards, and detail modals.
+
+##### [NEW] `frontend/src/pages/ProfilePage.tsx`
+Edit profile with visual fields, completion tracker, and AI-assisted suggestions.
+
+##### [NEW] `frontend/src/pages/AdminDashboardPage.tsx`
+Admin view with:
+- Registered users count
+- Chat analytics (bar chart)
+- Most searched schemes (pie chart)
+- Popular states (map placeholder)
+- Vector DB status indicator
+
+---
+
+#### Components
+
+##### [NEW] `frontend/src/components/layout/Sidebar.tsx`
+Collapsible sidebar with navigation, glassmorphism, active route highlighting.
+
+##### [NEW] `frontend/src/components/layout/Header.tsx`
+Top bar with search, notifications bell, theme toggle, user avatar.
+
+##### [NEW] `frontend/src/components/layout/Layout.tsx`
+Shell layout wrapping sidebar + header + main content area.
+
+##### [NEW] `frontend/src/components/ui/GlassCard.tsx`
+Reusable glassmorphic card component.
+
+##### [NEW] `frontend/src/components/ui/Button.tsx`
+Styled button with variants (primary, secondary, ghost, danger), loading state.
+
+##### [NEW] `frontend/src/components/ui/Input.tsx`
+Styled input with label, error state, icons.
+
+##### [NEW] `frontend/src/components/ui/Modal.tsx`
+Animated modal with backdrop blur.
+
+##### [NEW] `frontend/src/components/ui/Toast.tsx`
+Toast notification system (success, error, warning, info).
+
+##### [NEW] `frontend/src/components/ui/Skeleton.tsx`
+Loading skeleton with shimmer animation.
+
+##### [NEW] `frontend/src/components/ui/Badge.tsx`
+Status badges for scheme categories, eligibility.
+
+##### [NEW] `frontend/src/components/ui/ProgressRing.tsx`
+Circular progress indicator for profile completion.
+
+##### [NEW] `frontend/src/components/ui/EmptyState.tsx`
+Beautiful empty state with illustration and CTA.
+
+##### [NEW] `frontend/src/components/chat/ChatBubble.tsx`
+Message bubble with user/AI variants, markdown rendering, copy button.
+
+##### [NEW] `frontend/src/components/chat/ChatInput.tsx`
+Message input with send button, suggestion chips.
+
+##### [NEW] `frontend/src/components/chat/TypingIndicator.tsx`
+Animated typing dots.
+
+##### [NEW] `frontend/src/components/chat/SchemeCard.tsx`
+Inline scheme recommendation card within chat.
+
+##### [NEW] `frontend/src/components/chat/ChecklistView.tsx`
+Rendered checklist with checkboxes, download option.
+
+##### [NEW] `frontend/src/components/dashboard/StatsCard.tsx`
+Dashboard stat card with icon, value, trend.
+
+##### [NEW] `frontend/src/components/dashboard/SchemeCarousel.tsx`
+Horizontal scrolling scheme recommendations.
+
+##### [NEW] `frontend/src/components/dashboard/RecentChats.tsx`
+Recent conversations list.
+
+##### [NEW] `frontend/src/components/dashboard/ReadinessGauge.tsx`
+Circular gauge showing scheme readiness score.
+
+##### [NEW] `frontend/src/components/charts/BarChart.tsx`
+Simple CSS-based animated bar chart (no library dependency).
+
+##### [NEW] `frontend/src/components/charts/PieChart.tsx`
+SVG-based pie/donut chart for admin analytics.
+
+---
+
+### Phase 3: Documentation & Presentation Assets
+
+---
+
+##### [NEW] `README.md`
+Professional GitHub README with:
+- Project banner/logo
+- Problem statement, solution overview
+- Feature highlights with emojis
+- Architecture diagram (Mermaid)
+- Tech stack table
+- Installation instructions (frontend + backend)
+- Folder structure tree
+- AI Agent workflow explanation
+- RAG pipeline description
+- Screenshots placeholders
+- Demo flow walkthrough
+- Future scope
+- License (MIT)
+- Contributors
+
+##### [NEW] `docs/API.md`
+API documentation for all endpoints with request/response examples.
+
+##### [NEW] `docs/ARCHITECTURE.md`
+Detailed architecture document with all diagrams (system, LangGraph, ER, sequence, use case).
+
+##### [NEW] `docs/PITCH_DECK.md`
+10-slide pitch deck content in markdown with Mermaid diagrams.
+
+##### [NEW] `docs/JUDGE_QUESTIONS.md`
+160+ categorized questions with ideal answers.
+
+##### [NEW] `docs/DEMO_FLOW.md`
+Step-by-step judge demo script for all 3 scenarios.
+
+---
+
+## Folder Structure
+
+```
+GOVs-AI/
+├── README.md
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── API.md
+│   ├── PITCH_DECK.md
+│   ├── JUDGE_QUESTIONS.md
+│   └── DEMO_FLOW.md
+│
+├── backend/
+│   ├── main.py
+│   ├── config.py
+│   ├── requirements.txt
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   └── routes/
+│   │       ├── __init__.py
+│   │       ├── auth_routes.py
+│   │       ├── chat_routes.py
+│   │       ├── profile_routes.py
+│   │       ├── scheme_routes.py
+│   │       ├── document_routes.py
+│   │       ├── notification_routes.py
+│   │       └── admin_routes.py
+│   ├── agents/
+│   │   ├── __init__.py
+│   │   ├── graph.py
+│   │   ├── state.py
+│   │   ├── tools.py
+│   │   └── prompts.py
+│   ├── rag/
+│   │   ├── __init__.py
+│   │   ├── ingestion.py
+│   │   ├── retriever.py
+│   │   └── embeddings.py
+│   ├── memory/
+│   │   ├── __init__.py
+│   │   └── store.py
+│   ├── database/
+│   │   ├── __init__.py
+│   │   ├── connection.py
+│   │   └── models.py
+│   ├── data/
+│   │   ├── schemes.json
+│   │   ├── demo_users.json
+│   │   └── sample_pdfs/
+│   ├── tests/
+│   │   ├── test_auth.py
+│   │   ├── test_agent.py
+│   │   ├── test_rag.py
+│   │   └── test_api.py
+│   └── utils/
+│       ├── __init__.py
+│       └── validators.py
+│
+├── frontend/
+│   ├── index.html
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── vite.config.ts
+│   ├── public/
+│   │   └── favicon.svg
+│   └── src/
+│       ├── main.tsx
+│       ├── App.tsx
+│       ├── index.css
+│       ├── context/
+│       │   ├── AuthContext.tsx
+│       │   └── ThemeContext.tsx
+│       ├── hooks/
+│       │   ├── useChat.ts
+│       │   ├── useSchemes.ts
+│       │   └── useProfile.ts
+│       ├── lib/
+│       │   └── api.ts
+│       ├── types/
+│       │   └── index.ts
+│       ├── pages/
+│       │   ├── LandingPage.tsx
+│       │   ├── LoginPage.tsx
+│       │   ├── SignupPage.tsx
+│       │   ├── DashboardPage.tsx
+│       │   ├── ChatPage.tsx
+│       │   ├── SchemesPage.tsx
+│       │   ├── ProfilePage.tsx
+│       │   └── AdminDashboardPage.tsx
+│       ├── components/
+│       │   ├── layout/
+│       │   │   ├── Sidebar.tsx
+│       │   │   ├── Header.tsx
+│       │   │   └── Layout.tsx
+│       │   ├── ui/
+│       │   │   ├── GlassCard.tsx
+│       │   │   ├── Button.tsx
+│       │   │   ├── Input.tsx
+│       │   │   ├── Modal.tsx
+│       │   │   ├── Toast.tsx
+│       │   │   ├── Skeleton.tsx
+│       │   │   ├── Badge.tsx
+│       │   │   ├── ProgressRing.tsx
+│       │   │   └── EmptyState.tsx
+│       │   ├── chat/
+│       │   │   ├── ChatBubble.tsx
+│       │   │   ├── ChatInput.tsx
+│       │   │   ├── TypingIndicator.tsx
+│       │   │   ├── SchemeCard.tsx
+│       │   │   └── ChecklistView.tsx
+│       │   ├── dashboard/
+│       │   │   ├── StatsCard.tsx
+│       │   │   ├── SchemeCarousel.tsx
+│       │   │   ├── RecentChats.tsx
+│       │   │   └── ReadinessGauge.tsx
+│       │   └── charts/
+│       │       ├── BarChart.tsx
+│       │       └── PieChart.tsx
+│       └── assets/
+│           └── (generated images)
+```
+
+---
+
+## LangGraph Agent Workflow
+
+```mermaid
+stateDiagram-v2
+    [*] --> UnderstandGoal
+    UnderstandGoal --> RetrieveMemory
+    RetrieveMemory --> CheckMissingFields
+    CheckMissingFields --> AskQuestion: Missing info
+    CheckMissingFields --> RetrieveDocuments: Profile complete
+    AskQuestion --> ReceiveAnswer
+    ReceiveAnswer --> CheckMissingFields
+    RetrieveDocuments --> SemanticSearch
+    SemanticSearch --> ReasonEligibility
+    ReasonEligibility --> RankSchemes
+    RankSchemes --> GenerateExplanation
+    GenerateExplanation --> GenerateChecklist
+    GenerateChecklist --> StoreMemory
+    StoreMemory --> [*]
+```
+
+---
+
+## Database ER Diagram
+
+```mermaid
+erDiagram
+    USERS ||--o{ PROFILES : has
+    USERS ||--o{ CHATS : creates
+    USERS ||--o{ BOOKMARKS : saves
+    USERS ||--o{ RECOMMENDATIONS : receives
+    USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--|| CONVERSATION_MEMORY : has
+    CHATS ||--o{ MESSAGES : contains
+    GOVERNMENT_SCHEMES ||--o{ RECOMMENDATIONS : referenced_in
+    GOVERNMENT_SCHEMES ||--o{ BOOKMARKS : bookmarked
+    USERS ||--o{ DOCUMENTS : uploads
+
+    USERS {
+        int id PK
+        string email UK
+        string password_hash
+        string role
+        datetime created_at
+    }
+    PROFILES {
+        int id PK
+        int user_id FK
+        string name
+        int age
+        string gender
+        string state
+        string occupation
+        float annual_income
+        string category
+        string education
+        float land_area
+        boolean disability
+        int family_size
+    }
+    CHATS {
+        int id PK
+        int user_id FK
+        string title
+        datetime created_at
+    }
+    MESSAGES {
+        int id PK
+        int chat_id FK
+        string role
+        text content
+        json metadata
+        datetime created_at
+    }
+    CONVERSATION_MEMORY {
+        int id PK
+        int user_id FK
+        json memory_data
+        datetime updated_at
+    }
+    GOVERNMENT_SCHEMES {
+        int id PK
+        string name
+        string category
+        text description
+        json eligibility
+        text benefits
+        json documents_required
+        string website_url
+        string ministry
+        string state
+        boolean is_active
+    }
+    RECOMMENDATIONS {
+        int id PK
+        int user_id FK
+        int scheme_id FK
+        float score
+        text reasoning
+        datetime created_at
+    }
+    BOOKMARKS {
+        int id PK
+        int user_id FK
+        int scheme_id FK
+        datetime created_at
+    }
+    DOCUMENTS {
+        int id PK
+        string filename
+        string upload_path
+        boolean processed
+        int chunks_count
+        int uploaded_by FK
+        datetime created_at
+    }
+    NOTIFICATIONS {
+        int id PK
+        int user_id FK
+        string title
+        text body
+        boolean read
+        datetime created_at
+    }
+```
+
+---
+
+## Execution Order
+
+| Phase | Deliverables | Estimated Files |
+|---|---|---|
+| **1a** | Backend core (config, DB, auth, models) | ~10 files |
+| **1b** | AI Agent (LangGraph, tools, prompts, RAG) | ~10 files |
+| **1c** | API routes (all endpoints) | ~7 files |
+| **1d** | Sample data (schemes JSON, demo users, PDFs) | ~8 files |
+| **2a** | Frontend scaffold + design system (CSS) | ~5 files |
+| **2b** | UI components (all reusable components) | ~20 files |
+| **2c** | Pages (all 8 pages) | ~8 files |
+| **2d** | Hooks, context, API layer | ~8 files |
+| **3** | Documentation (README, API docs, architecture, pitch, questions) | ~6 files |
+| **Total** | | **~82 files** |
+
+---
+
+## Verification Plan
+
+### Automated Tests
+```bash
+# Backend
+cd backend && python -m pytest tests/ -v
+
+# Frontend
+cd frontend && npm run build  # TypeScript compilation check
+```
+
+### Manual Verification
+1. Start backend: `cd backend && uvicorn main:app --reload`
+2. Start frontend: `cd frontend && npm run dev`
+3. Walk through demo flow:
+   - Landing page → Login as demo farmer → Chat → Get recommendations → View dashboard
+   - Login as demo student → Chat about scholarships
+   - Login as admin → View analytics dashboard
+4. Verify dark/light mode toggle
+5. Verify responsive layout on mobile viewport
+6. Verify AI chat streaming (or simulated response if no API key)
+
+---
+
+> [!TIP]
+> **Recommended approach**: I'll build this in phases, starting with the backend core + AI agent, then the frontend with full visual polish. Each phase will be independently verifiable. Please approve this plan and answer the open questions above so I can begin building.

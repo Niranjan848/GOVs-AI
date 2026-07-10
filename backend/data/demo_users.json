@@ -1,0 +1,117 @@
+[
+  {
+    "email": "ramesh@demo.govsai.in",
+    "password": "demo123",
+    "role": "citizen",
+    "profile": {
+      "name": "Ramesh Kumar",
+      "age": 45,
+      "gender": "male",
+      "state": "Uttar Pradesh",
+      "district": "Varanasi",
+      "occupation": "farmer",
+      "annual_income": 120000,
+      "category": "obc",
+      "education": "10th Pass",
+      "land_area_acres": 3.0,
+      "has_disability": false,
+      "family_size": 5,
+      "marital_status": "married",
+      "has_bank_account": true,
+      "has_aadhaar": true,
+      "bpl_card": true
+    }
+  },
+  {
+    "email": "priya@demo.govsai.in",
+    "password": "demo123",
+    "role": "citizen",
+    "profile": {
+      "name": "Priya Sharma",
+      "age": 20,
+      "gender": "female",
+      "state": "Maharashtra",
+      "district": "Pune",
+      "occupation": "student",
+      "annual_income": 250000,
+      "category": "sc",
+      "education": "Undergraduate",
+      "land_area_acres": null,
+      "has_disability": false,
+      "family_size": 4,
+      "marital_status": "unmarried",
+      "has_bank_account": true,
+      "has_aadhaar": true,
+      "bpl_card": false
+    }
+  },
+  {
+    "email": "sunita@demo.govsai.in",
+    "password": "demo123",
+    "role": "citizen",
+    "profile": {
+      "name": "Sunita Devi",
+      "age": 35,
+      "gender": "female",
+      "state": "Gujarat",
+      "district": "Ahmedabad",
+      "occupation": "entrepreneur",
+      "annual_income": 350000,
+      "category": "general",
+      "education": "Graduate",
+      "land_area_acres": null,
+      "has_disability": false,
+      "family_size": 3,
+      "marital_status": "married",
+      "has_bank_account": true,
+      "has_aadhaar": true,
+      "bpl_card": false
+    }
+  },
+  {
+    "email": "mohan@demo.govsai.in",
+    "password": "demo123",
+    "role": "citizen",
+    "profile": {
+      "name": "Mohan Pillai",
+      "age": 68,
+      "gender": "male",
+      "state": "Tamil Nadu",
+      "district": "Chennai",
+      "occupation": "retired",
+      "annual_income": 180000,
+      "category": "general",
+      "education": "Graduate",
+      "land_area_acres": 0.5,
+      "has_disability": false,
+      "family_size": 2,
+      "marital_status": "married",
+      "has_bank_account": true,
+      "has_aadhaar": true,
+      "bpl_card": false
+    }
+  },
+  {
+    "email": "vikram@demo.govsai.in",
+    "password": "demo123",
+    "role": "citizen",
+    "profile": {
+      "name": "Vikram Reddy",
+      "age": 30,
+      "gender": "male",
+      "state": "Karnataka",
+      "district": "Bengaluru",
+      "occupation": "startup founder",
+      "annual_income": 600000,
+      "category": "general",
+      "education": "Post Graduate",
+      "land_area_acres": null,
+      "has_disability": false,
+      "family_size": 1,
+      "marital_status": "unmarried",
+      "has_bank_account": true,
+      "has_aadhaar": true,
+      "bpl_card": false
+    }
+  }
+]

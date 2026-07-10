@@ -1,0 +1,409 @@
+[
+  {
+    "name": "PM Kisan Samman Nidhi",
+    "short_name": "PM-KISAN",
+    "category": "agriculture",
+    "description": "Pradhan Mantri Kisan Samman Nidhi provides income support of ₹6,000 per year to all landholding farmer families across the country, paid in three equal installments of ₹2,000 each. The scheme aims to supplement the financial needs of farmers for procuring various inputs to ensure proper crop health and appropriate yields.",
+    "eligibility": {
+      "occupation": ["farmer"],
+      "max_income": 1000000,
+      "gender": "all",
+      "min_age": 18,
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"],
+      "min_land_acres": 0.1
+    },
+    "benefits": "₹6,000 per year transferred directly to bank account in 3 installments of ₹2,000 each (April-July, August-November, December-March).",
+    "benefits_amount": "₹6,000/year",
+    "documents_required": [
+      "Aadhaar Card",
+      "Bank Account (linked with Aadhaar)",
+      "Land Ownership Records / Land Registration Documents",
+      "State Domicile Certificate",
+      "Mobile Number linked with Aadhaar"
+    ],
+    "application_process": "Apply online through PM-Kisan portal (pmkisan.gov.in) or visit nearest Common Service Centre (CSC). Farmers can also register through State Nodal Officers.",
+    "website_url": "https://pmkisan.gov.in",
+    "ministry": "Ministry of Agriculture & Farmers Welfare",
+    "state": "Central"
+  },
+  {
+    "name": "PM Vishwakarma Yojana",
+    "short_name": "PM-VISHWAKARMA",
+    "category": "skill",
+    "description": "PM Vishwakarma aims to strengthen and nurture the Guru-Shishya tradition of traditional artisans and craftspeople. The scheme provides recognition, skill training, toolkit incentive, credit support, and incentive for digital transactions and marketing support.",
+    "eligibility": {
+      "occupation": ["artisan", "craftsman", "carpenter", "blacksmith", "goldsmith", "potter", "weaver", "tailor", "mason", "cobbler", "barber", "washerman"],
+      "min_age": 18,
+      "gender": "all",
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"]
+    },
+    "benefits": "Skill training with stipend of ₹500/day, toolkit incentive of ₹15,000, collateral-free loans up to ₹3 lakh at 5% interest rate, digital transactions incentive, and marketing support.",
+    "benefits_amount": "Up to ₹3 lakh loan + ₹15,000 toolkit",
+    "documents_required": [
+      "Aadhaar Card",
+      "Bank Account Details",
+      "Mobile Number",
+      "Caste Certificate (if applicable)",
+      "Proof of Traditional Occupation",
+      "Passport Size Photos"
+    ],
+    "application_process": "Register at pmvishwakarma.gov.in. Verification by Gram Panchayat (rural) or ULB (urban). After verification, enroll for skill training.",
+    "website_url": "https://pmvishwakarma.gov.in",
+    "ministry": "Ministry of Micro, Small and Medium Enterprises",
+    "state": "Central"
+  },
+  {
+    "name": "Pradhan Mantri Mudra Yojana",
+    "short_name": "PMMY-MUDRA",
+    "category": "business",
+    "description": "MUDRA (Micro Units Development and Refinance Agency) provides loans up to ₹10 lakh to non-corporate, non-farm small/micro enterprises. Three categories: Shishu (up to ₹50,000), Kishore (₹50,001 to ₹5 lakh), and Tarun (₹5,00,001 to ₹10 lakh). No collateral required.",
+    "eligibility": {
+      "occupation": ["business", "entrepreneur", "self-employed", "shopkeeper", "vendor", "trader"],
+      "min_age": 18,
+      "max_age": 65,
+      "gender": "all",
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"]
+    },
+    "benefits": "Collateral-free business loans: Shishu (up to ₹50,000), Kishore (up to ₹5 lakh), Tarun (up to ₹10 lakh). Competitive interest rates. No processing fee.",
+    "benefits_amount": "Up to ₹10 lakh loan",
+    "documents_required": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Business Plan / Proposal",
+      "Proof of Business Existence",
+      "Bank Account Statement (6 months)",
+      "Passport Size Photos",
+      "Address Proof"
+    ],
+    "application_process": "Apply at any bank, NBFC, or MFI. Visit mudra.org.in for authorized lending institutions. Submit business plan with loan application.",
+    "website_url": "https://www.mudra.org.in",
+    "ministry": "Ministry of Finance",
+    "state": "Central"
+  },
+  {
+    "name": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana",
+    "short_name": "AB-PMJAY",
+    "category": "health",
+    "description": "The world's largest health insurance scheme providing health coverage of ₹5 lakh per family per year for secondary and tertiary care hospitalization. Covers pre and post-hospitalization expenses. Over 1,500 health packages covering surgery, medical treatments, and diagnostics.",
+    "eligibility": {
+      "max_income": 300000,
+      "gender": "all",
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"],
+      "bpl_required": false
+    },
+    "benefits": "Health insurance coverage of ₹5 lakh per family per year. Cashless treatment at empaneled hospitals. Covers 1,500+ medical packages. Pre and post hospitalization expenses covered.",
+    "benefits_amount": "₹5 lakh/year health cover",
+    "documents_required": [
+      "Aadhaar Card",
+      "Ration Card / BPL Card",
+      "Family ID / SECC Data",
+      "Mobile Number",
+      "Age Proof"
+    ],
+    "application_process": "Check eligibility on mera.pmjay.gov.in. Visit nearest Ayushman Mitra at empaneled hospital or Common Service Centre to create e-card.",
+    "website_url": "https://pmjay.gov.in",
+    "ministry": "Ministry of Health & Family Welfare",
+    "state": "Central"
+  },
+  {
+    "name": "Startup India Initiative",
+    "short_name": "STARTUP-INDIA",
+    "category": "business",
+    "description": "Startup India is a flagship initiative to build a strong ecosystem for nurturing innovation and startups. Recognized startups get tax benefits, easier compliance, patent/IPR support, funding support through Fund of Funds, and networking opportunities.",
+    "eligibility": {
+      "occupation": ["entrepreneur", "business", "startup founder"],
+      "min_age": 18,
+      "gender": "all",
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"]
+    },
+    "benefits": "Income tax exemption for 3 years, self-certification compliance, fast-track patent applications at 80% rebate, access to Fund of Funds (₹10,000 crore), networking through Startup India Hub.",
+    "benefits_amount": "Tax exemption + Fund of Funds access",
+    "documents_required": [
+      "Certificate of Incorporation / Registration",
+      "PAN Card of Entity",
+      "Description of Innovation",
+      "Recommendation Letter (from incubator/industry body)",
+      "Patent Details (if any)",
+      "Aadhaar Card of Founders"
+    ],
+    "application_process": "Register on startupindia.gov.in. Apply for DPIIT Recognition. Submit required documents for approval.",
+    "website_url": "https://www.startupindia.gov.in",
+    "ministry": "Department for Promotion of Industry and Internal Trade (DPIIT)",
+    "state": "Central"
+  },
+  {
+    "name": "Pradhan Mantri Kaushal Vikas Yojana",
+    "short_name": "PMKVY",
+    "category": "skill",
+    "description": "PMKVY is the flagship skill development scheme enabling youth to take up industry-relevant skill training leading to better livelihood and employment. Provides free skill training, certification, and placement assistance.",
+    "eligibility": {
+      "min_age": 15,
+      "max_age": 45,
+      "gender": "all",
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"],
+      "education": "no_minimum"
+    },
+    "benefits": "Free skill training, NSQF certification, training allowance of ₹500/day, placement assistance, accidental insurance of ₹2 lakh during training.",
+    "benefits_amount": "Free training + ₹500/day allowance",
+    "documents_required": [
+      "Aadhaar Card",
+      "Bank Account Details",
+      "Educational Certificates (if any)",
+      "Passport Size Photos",
+      "Mobile Number"
+    ],
+    "application_process": "Visit pmkvyofficial.org to find training centers. Enroll directly at authorized training center. Complete skill assessment and get certified.",
+    "website_url": "https://www.pmkvyofficial.org",
+    "ministry": "Ministry of Skill Development and Entrepreneurship",
+    "state": "Central"
+  },
+  {
+    "name": "National Scholarship Portal - Post Matric Scholarship",
+    "short_name": "NSP-PMS",
+    "category": "education",
+    "description": "Post Matric Scholarship for students from SC/ST/OBC/Minority communities pursuing studies beyond Class 10. Covers tuition fees, maintenance allowance, and other academic expenses.",
+    "eligibility": {
+      "occupation": ["student"],
+      "max_income": 250000,
+      "gender": "all",
+      "state": "all",
+      "category": ["sc", "st", "obc", "ews"],
+      "min_age": 15,
+      "max_age": 35,
+      "education": "post_matric"
+    },
+    "benefits": "Full tuition fee reimbursement, maintenance allowance (₹380-1200/month depending on course), book and equipment grant.",
+    "benefits_amount": "Full tuition + ₹380-1200/month",
+    "documents_required": [
+      "Aadhaar Card",
+      "Caste / Community Certificate",
+      "Income Certificate",
+      "Previous Year Marksheet",
+      "Current Year Admission Letter",
+      "Bank Account (student's own)",
+      "College/Institution Fee Receipt",
+      "Passport Size Photo"
+    ],
+    "application_process": "Apply on scholarships.gov.in during the application window (usually August-November). Submit verified documents through institution.",
+    "website_url": "https://scholarships.gov.in",
+    "ministry": "Ministry of Social Justice and Empowerment / Ministry of Tribal Affairs",
+    "state": "Central"
+  },
+  {
+    "name": "Stand-Up India",
+    "short_name": "STANDUP-INDIA",
+    "category": "business",
+    "description": "Stand-Up India facilitates bank loans between ₹10 lakh and ₹1 crore to at least one SC/ST borrower and at least one Woman borrower per bank branch for setting up a greenfield enterprise in manufacturing, services, or trading.",
+    "eligibility": {
+      "min_age": 18,
+      "gender": "female",
+      "category": ["sc", "st"],
+      "occupation": ["entrepreneur", "business", "self-employed"],
+      "state": "all"
+    },
+    "benefits": "Composite loans of ₹10 lakh to ₹1 crore for greenfield enterprises. Includes term loan and working capital. Repayable in 7 years with moratorium up to 18 months.",
+    "benefits_amount": "₹10 lakh to ₹1 crore loan",
+    "documents_required": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Caste Certificate (SC/ST)",
+      "Business Plan",
+      "Proof of Address",
+      "Identity Proof",
+      "Bank Account Statement",
+      "Quotations for Machinery/Equipment"
+    ],
+    "application_process": "Apply through standupmitra.in portal or approach nearest bank branch. Bank credit committee evaluates the proposal.",
+    "website_url": "https://www.standupmitra.in",
+    "ministry": "Ministry of Finance",
+    "state": "Central"
+  },
+  {
+    "name": "Pradhan Mantri Awas Yojana - Gramin",
+    "short_name": "PMAY-G",
+    "category": "housing",
+    "description": "PM Awas Yojana (Gramin) provides financial assistance for construction of pucca houses with basic amenities to eligible rural houseless and those living in kutcha/dilapidated houses.",
+    "eligibility": {
+      "gender": "all",
+      "state": "all",
+      "max_income": 300000,
+      "category": ["general", "obc", "sc", "st", "ews"],
+      "bpl_required": true
+    },
+    "benefits": "Financial assistance of ₹1.20 lakh (plain areas) and ₹1.30 lakh (hilly/difficult areas) for construction of houses with basic amenities including toilet, LPG connection, electricity, and drinking water.",
+    "benefits_amount": "₹1.20-1.30 lakh housing assistance",
+    "documents_required": [
+      "Aadhaar Card",
+      "BPL Card / SECC Data",
+      "Bank Account (Aadhaar linked)",
+      "Proof of Landlessness / Kutcha House",
+      "Gram Panchayat Recommendation",
+      "Passport Size Photo"
+    ],
+    "application_process": "Selection through SECC-2011 data verified by Gram Sabha. Apply through AwaasSoft or visit Gram Panchayat office.",
+    "website_url": "https://pmayg.nic.in",
+    "ministry": "Ministry of Rural Development",
+    "state": "Central"
+  },
+  {
+    "name": "Sukanya Samriddhi Yojana",
+    "short_name": "SSY",
+    "category": "women",
+    "description": "Sukanya Samriddhi Yojana is a savings scheme for the girl child, offering one of the highest interest rates among government small savings schemes with tax benefits under Section 80C.",
+    "eligibility": {
+      "gender": "female",
+      "max_age": 10,
+      "min_age": 0,
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"]
+    },
+    "benefits": "Interest rate of 8.2% per annum (compounded yearly). Tax-free maturity proceeds. EEE (Exempt-Exempt-Exempt) tax status. Partial withdrawal allowed after girl turns 18.",
+    "benefits_amount": "8.2% p.a. interest, tax-free returns",
+    "documents_required": [
+      "Girl Child's Birth Certificate",
+      "Parent/Guardian Aadhaar Card",
+      "Parent/Guardian Address Proof",
+      "Passport Size Photos (Parent and Child)"
+    ],
+    "application_process": "Open account at any post office or authorized bank with minimum deposit of ₹250. Maximum 2 accounts per family.",
+    "website_url": "https://www.nsiindia.gov.in",
+    "ministry": "Ministry of Finance",
+    "state": "Central"
+  },
+  {
+    "name": "Atal Pension Yojana",
+    "short_name": "APY",
+    "category": "pension",
+    "description": "Atal Pension Yojana guarantees a minimum pension of ₹1,000 to ₹5,000 per month to subscribers after the age of 60 years. The government co-contributes 50% of the premium for eligible subscribers.",
+    "eligibility": {
+      "min_age": 18,
+      "max_age": 40,
+      "gender": "all",
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"]
+    },
+    "benefits": "Guaranteed pension of ₹1,000-5,000/month after age 60. Spouse receives same pension after subscriber's death. Nominee gets lump sum. Government co-contribution for non-taxpayers.",
+    "benefits_amount": "₹1,000-5,000/month pension",
+    "documents_required": [
+      "Aadhaar Card",
+      "Bank Account / Savings Account",
+      "Mobile Number linked with Bank Account"
+    ],
+    "application_process": "Visit any bank where savings account is held. Fill APY registration form. Select pension amount and contribution frequency.",
+    "website_url": "https://www.npscra.nsdl.co.in/scheme-details.php",
+    "ministry": "Ministry of Finance (PFRDA)",
+    "state": "Central"
+  },
+  {
+    "name": "PM Ujjwala Yojana 2.0",
+    "short_name": "PMUY",
+    "category": "women",
+    "description": "Provides free LPG connections to women from Below Poverty Line (BPL) households, aiming to safeguard the health of women and children by providing clean cooking fuel.",
+    "eligibility": {
+      "gender": "female",
+      "min_age": 18,
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"],
+      "bpl_required": true,
+      "max_income": 200000
+    },
+    "benefits": "Free LPG connection, first refill free, free hot plate (stove), financial assistance of ₹1,600 per connection. Subsidy on subsequent refills via DBT.",
+    "benefits_amount": "Free LPG connection + ₹1,600",
+    "documents_required": [
+      "Aadhaar Card",
+      "BPL Card / Ration Card",
+      "Bank Account (Aadhaar linked)",
+      "Passport Size Photo",
+      "Address Proof"
+    ],
+    "application_process": "Apply at nearest LPG distributor (HP, Bharat, Indane). Can also apply online through pmuy.gov.in. Submit KYC documents.",
+    "website_url": "https://www.pmuy.gov.in",
+    "ministry": "Ministry of Petroleum and Natural Gas",
+    "state": "Central"
+  },
+  {
+    "name": "PM SVANidhi - Street Vendor Scheme",
+    "short_name": "PM-SVANIDHI",
+    "category": "business",
+    "description": "PM Street Vendor's AtmaNirbhar Nidhi provides affordable working capital loans to street vendors to resume their livelihoods affected by COVID-19. Loans in 3 tiers with no collateral.",
+    "eligibility": {
+      "occupation": ["vendor", "hawker", "street vendor", "self-employed"],
+      "min_age": 18,
+      "gender": "all",
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"]
+    },
+    "benefits": "First loan: ₹10,000. Second loan: ₹20,000. Third loan: ₹50,000. Interest subsidy of 7%. Cashback incentive for digital transactions. No collateral needed.",
+    "benefits_amount": "Up to ₹50,000 loan",
+    "documents_required": [
+      "Aadhaar Card",
+      "Vending Certificate / Letter of Recommendation from ULB",
+      "Bank Account Details",
+      "Mobile Number",
+      "Passport Size Photo"
+    ],
+    "application_process": "Apply on pmsvanidhi.mohua.gov.in. Can also visit nearest bank, NBFC, or MFI. ULB verification required.",
+    "website_url": "https://pmsvanidhi.mohua.gov.in",
+    "ministry": "Ministry of Housing and Urban Affairs",
+    "state": "Central"
+  },
+  {
+    "name": "Pradhan Mantri Matru Vandana Yojana",
+    "short_name": "PMMVY",
+    "category": "women",
+    "description": "Maternity benefit program providing ₹5,000 in 3 installments to pregnant women and lactating mothers for the first living child, and ₹6,000 for the second child (if girl).",
+    "eligibility": {
+      "gender": "female",
+      "min_age": 19,
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"],
+      "max_income": 800000
+    },
+    "benefits": "₹5,000 for first child in 3 installments (₹1,000 + ₹2,000 + ₹2,000). Additional ₹6,000 for second child if it is a girl. Benefits transferred via DBT.",
+    "benefits_amount": "₹5,000-11,000",
+    "documents_required": [
+      "Aadhaar Card",
+      "MCP Card (Mother & Child Protection Card)",
+      "Bank Account (Aadhaar linked)",
+      "Pregnancy Registration Certificate",
+      "Mobile Number"
+    ],
+    "application_process": "Register at Anganwadi Centre or nearest health facility. Apply through PMMVY-CAS portal. Submit required documents for each installment.",
+    "website_url": "https://pmmvy.wcd.gov.in",
+    "ministry": "Ministry of Women and Child Development",
+    "state": "Central"
+  },
+  {
+    "name": "National Apprenticeship Promotion Scheme",
+    "short_name": "NAPS",
+    "category": "skill",
+    "description": "NAPS promotes apprenticeship training in establishments by sharing 25% of prescribed stipend (up to ₹1,500/month) with employers and reimbursing cost of basic training.",
+    "eligibility": {
+      "occupation": ["student", "unemployed", "fresher"],
+      "min_age": 14,
+      "max_age": 30,
+      "gender": "all",
+      "state": "all",
+      "category": ["general", "obc", "sc", "st", "ews"]
+    },
+    "benefits": "Government shares 25% of stipend up to ₹1,500/month. Basic training cost reimbursed up to ₹7,500/month per apprentice. Industry-recognized certification.",
+    "benefits_amount": "₹1,500/month stipend share",
+    "documents_required": [
+      "Aadhaar Card",
+      "Educational Certificates",
+      "Bank Account Details",
+      "Passport Size Photos",
+      "Medical Fitness Certificate"
+    ],
+    "application_process": "Register on apprenticeshipindia.gov.in. Search for apprenticeship opportunities. Apply to establishments directly through portal.",
+    "website_url": "https://www.apprenticeshipindia.gov.in",
+    "ministry": "Ministry of Skill Development and Entrepreneurship",
+    "state": "Central"
+  }
+]

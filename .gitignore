@@ -1,0 +1,36 @@
+# Dependency directories
+node_modules/
+
+# Production build output
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+.env
+
+# Database and Vector Index
+*.db
+*.sqlite3
+memory_store/
+faiss_index/
+uploads/
+
+# Local configuration / IDEs
+.vscode/
+.idea/
+.agents/
+.gemini/
+.antigravity/
+.antigravity-ide/
