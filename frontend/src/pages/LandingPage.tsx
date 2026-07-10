@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Bot, Shield, Brain, Zap, Users, FileText, ChevronRight, Sparkles } from 'lucide-react';
+import { Bot, Shield, Brain, Zap, FileText, ChevronRight, Sparkles } from 'lucide-react';
 import { DEMO_USERS } from '../types';
 import { useAuth } from '../context/AuthContext';
 

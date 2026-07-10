@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import type { Scheme, Bookmark } from '../types';
 import { schemeAPI } from '../lib/api';
 

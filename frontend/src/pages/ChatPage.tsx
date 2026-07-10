@@ -1,14 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Plus, ArrowLeft, Bot, User as UserIcon, Moon, Sun, Copy, Check, Bookmark } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { Send, Plus, ArrowLeft, Bot, User as UserIcon, Moon, Sun, Copy, Check } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useChat } from '../hooks/useChat';
-import type { Message, SchemePreview, Checklist } from '../types';
+import type { Message, SchemePreview } from '../types';
 
 export default function ChatPage() {
   const [input, setInput] = useState('');
-  const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { messages, chatId, isLoading, history, sendMessage, loadChat, loadHistory, startNewChat } = useChat();
   const navigate = useNavigate();
